@@ -1,0 +1,8 @@
+<? if (is_null($this->logentry)) { echo "{}"; return; } ?>
+{
+    "timestamp" : "<?php echo $this->logentry->Timestamp(); ?>",
+    "source" : "<?php echo str_replace("\"", "\\\"", htmlspecialchars($this->logentry->Source())); ?>",
+    "action" : "<?php echo str_replace("\"", "\\\"", htmlspecialchars($this->logentry->Action())); ?>",
+    "target" : "<?php echo str_replace("\"", "\\\"", htmlspecialchars($this->logentry->Target())); ?>",
+    "comment" : "<?php echo str_replace("\"", "\\\"", htmlspecialchars($this->logentry->Comment())); ?>"
+}

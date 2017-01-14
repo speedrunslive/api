@@ -1,0 +1,13 @@
+{
+    "count" : "<?php echo count($this->lbs); ?>",
+    "leaderboards" :
+        [
+            <?php
+            $lbJSONs = array();
+            foreach ($this->lbs as $lb) {
+                array_push($lbJSONs, $this->partial('rtaleaderboard.phtml', array("lb" => $lb)));
+            }
+            echo join(",", $lbJSONs);
+            ?>
+        ]
+}

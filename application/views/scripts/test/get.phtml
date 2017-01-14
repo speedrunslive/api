@@ -1,0 +1,7 @@
+<?
+Predis\Autoloader::register();
+$redis = new Predis\Client();
+
+#echo '{"team":'.json_encode($redis->get("team")).'}';
+echo $redis->get("teams_json");
+

@@ -1,0 +1,12 @@
+{
+	"count" : <?php echo $this->logCount; ?>,
+	"entries" : [
+		<?php
+			$logentryJSONs = array();
+			foreach ($this->entries as $entry) {
+				array_push($logentryJSONs, $this->partial('logentry.phtml', array("logentry" => $entry)));
+			}
+            echo join(",", $logentryJSONs);
+		?>
+	]
+}

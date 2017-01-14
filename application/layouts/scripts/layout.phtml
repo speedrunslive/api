@@ -1,0 +1,17 @@
+<?php header("Content-Type: application/json; charset=utf-8"); ?>
+<?php // header("Access-Control-Allow-Origin: *"); ?>
+<?php header("Access-Control-Allow-Methods: GET,OPTIONS,PUT,POST,DELETE"); ?>
+<?php header("Access-Control-Request-Headers: *"); ?>
+
+<?php
+    $content = $this->layout()->content;
+    
+    if (isset($_GET["callback"])) {
+        header_remove("Content-Type");
+        header("Content-Type: application/x-javascript; charset=utf-8");
+        $callback = $_GET["callback"];
+        $content = "$callback(" . $content . ")";
+    }
+    
+    echo $content;
+?>

@@ -1,0 +1,7 @@
+<? if (is_null($this->purge)) { echo "{}"; return; } ?>
+{
+    "user" : "<?php echo $this->purge->User(); ?>",
+    "num_warnings" : <?php echo $this->purge->Num_Warnings(); ?>,
+    "remaining" : <?php echo $this->purge->Remaining(); ?>,
+    "last_purge" : <?php echo $this->partial('logentry.phtml', array("logentry" => $this->purge->LastPurge())); ?>
+}

@@ -1,0 +1,10 @@
+{
+    <?php
+    $streamJSONs = array();
+    foreach ($this->streams as $stream) {
+        $channel = strtolower($stream->channel);
+        array_push($streamJSONs, "\"$channel\" : ".$this->partial('player.phtml', array("player" => $stream->player)));
+    }
+    echo join(",", $streamJSONs);
+    ?>
+}

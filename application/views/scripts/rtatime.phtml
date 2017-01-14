@@ -1,0 +1,23 @@
+{
+    "id" : <? echo $this->rtatime->Id(); ?>,
+    "leaderboard" : <? echo $this->partial('rtaleaderboard.phtml', array("lb" => $this->rtatime->Leaderboard())); ?>,
+    "player" : <? echo $this->partial('player.phtml', array("player" => $this->rtatime->Player())); ?>,
+    "time" : <? echo $this->rtatime->Time(); ?>,
+    "rank" : <? echo $this->rtatime->Rank(); ?>,
+    "video" : <? echo json_encode($this->rtatime->Video()); ?>,
+    "notes" : <? echo json_encode($this->rtatime->Notes()); ?>,
+    "date" : <? echo $this->rtatime->Date(); ?>,
+    "day" : <? echo $this->rtatime->Day(); ?>,
+    "month" : <? echo $this->rtatime->Month(); ?>,
+    "year" : <? echo $this->rtatime->Year(); ?>,
+    "tags" :
+        [
+            <?php
+            $tagsJSONs = array();
+            foreach ($this->rtatime->Tags() as $taggroup) {
+                array_push($tagsJSONs, $this->partial('taggroup.phtml', array("tagGroup" => $taggroup)));
+            }
+            echo join(",", $tagsJSONs);
+            ?>
+        ]
+}

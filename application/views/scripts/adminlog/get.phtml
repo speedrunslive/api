@@ -1,0 +1,13 @@
+{
+<?php
+if ( $this->id = "purge" ) {
+	echo '"purges": [';
+	$purgeJSONs = array();
+	foreach ($this->purges as $purge) {
+		array_push($purgeJSONs, $this->partial('purge.phtml', array("purge" => $purge)));
+	}
+	echo join(",", $purgeJSONs);
+	echo "]";
+}
+?>
+}

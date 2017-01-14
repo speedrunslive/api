@@ -1,0 +1,12 @@
+{
+    "rank" : <?php echo empty($this->stat["gameRank"]) ? 0 : $this->stat["gameRank"]; ?>,
+    "totalRaces" : <?php echo $this->stat["totalRaces"]; ?>,
+    "totalTimePlayed" : <?php echo $this->stat["totalPlayedTime"]; ?>,
+    "firstRace" : <?php echo $this->stat["firstRaceId"]; ?>,
+    "firstRaceDate" : <?php echo $this->stat["firstRaceDate"]; ?>,
+    "totalFirstPlace" : <?php echo $this->stat["totalFirsts"]; ?>,
+    "totalSecondPlace" : <?php echo $this->stat["totalSeconds"]; ?>,
+    "totalThirdPlace" : <?php echo $this->stat["totalThirds"]; ?>,
+    "totalQuits" : <?php echo $this->stat["totalQuits"]; ?>,
+    "totalDisqualifications" : <?php echo $this->stat["totalDQs"]; ?>
+}

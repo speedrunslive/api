@@ -1,0 +1,15 @@
+{
+    "id" : <? echo $this->tagGroup->Id(); ?>,
+    "name" : <? echo json_encode($this->tagGroup->Name()); ?>,
+    "count" : "<?php echo count($this->tagGroup->Tags()); ?>",
+    "tags" :
+        [
+            <?php
+            $tagsJSONs = array();
+            foreach ($this->tagGroup->Tags() as $tag) {
+                array_push($tagsJSONs, $this->partial('tag.phtml', array("tag" => $tag)));
+            }
+            echo join(",", $tagsJSONs);
+            ?>
+        ]
+}

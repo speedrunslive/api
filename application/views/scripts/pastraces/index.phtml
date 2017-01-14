@@ -1,0 +1,13 @@
+{
+    "count" : <?php echo $this->pastracesCount; ?>,
+    "pastraces" :
+        [
+            <?php
+            $pastraceJSONs = array();
+            foreach ($this->pastraces as $race) {
+                array_push($pastraceJSONs, $this->partial('pastrace.phtml', array("pastrace" => $race)));
+            }
+            echo join(",", $pastraceJSONs);
+            ?>
+        ]
+}

@@ -1,0 +1,13 @@
+{
+    "race" : <?php echo $this->pastraceresult->RaceId(); ?>,
+    "place" : <?php echo $this->pastraceresult->Place(); ?>,
+    "player" : "<?php echo $this->pastraceresult->Player()->Name(); ?>",
+    "time" : <?php echo $this->pastraceresult->Time(); ?>,
+    "message" : <?php echo json_encode(htmlspecialchars($this->pastraceresult->Message())); ?>,
+    "oldtrueskill" : <?php echo $this->pastraceresult->OldTrueskill(); ?>,
+    "newtrueskill" : <?php echo $this->pastraceresult->NewTrueskill(); ?>,
+    "trueskillchange" : <?php echo $this->pastraceresult->TrueskillChange(); ?>,
+    "oldseasontrueskill" : <?php echo $this->pastraceresult->OldSeasonTrueskill(); ?>,
+    "newseasontrueskill" : <?php echo $this->pastraceresult->NewSeasonTrueskill(); ?>,
+    "seasontrueskillchange" : <?php echo $this->pastraceresult->SeasonTrueskillChange(); ?>
+}

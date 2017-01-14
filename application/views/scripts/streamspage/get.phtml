@@ -1,0 +1,8 @@
+<?
+Predis\Autoloader::register();
+$redis = new Predis\Client();
+
+var $team = json_decode($redis->get("teams_json"));
+
+var_dump($team[0]);
+

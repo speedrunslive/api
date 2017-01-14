@@ -1,0 +1,11 @@
+{
+    "month" : <?php echo $this->month->Month(); ?>,
+    "year" : <?php echo $this->month->Year(); ?>,
+    "totalRaces" : <?php echo $this->month->Stats()->GetStat(SRL_Core_StatTypes::TotalRaces); ?>,
+	"totalPlayers" : <?php echo $this->month->Stats()->GetStat(SRL_Core_StatTypes::TotalPlayers); ?>,
+	"totalGames" : <?php echo $this->month->Stats()->GetStat(SRL_Core_StatTypes::TotalGames); ?>,
+	"largestRace" : <?php echo $this->month->Stats()->GetStat(SRL_Core_StatTypes::LargestRace); ?>,
+	"largestRaceSize" : <?php echo $this->month->Stats()->GetStat(SRL_Core_StatTypes::LargestRaceSize); ?>,
+	"totalRaceTime" : <?php echo $this->month->Stats()->GetStat(SRL_Core_StatTypes::TotalRaceTime); ?>,
+	"totalTimePlayed" : <?php echo $this->month->Stats()->GetStat(SRL_Core_StatTypes::TotalTimePlayed); ?>
+}

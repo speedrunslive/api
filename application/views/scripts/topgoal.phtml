@@ -1,0 +1,12 @@
+{
+    "name" : <?php $goals = $this->topgoal->Goal(); echo json_encode(htmlspecialchars($goals->Goal())); ?>,
+    "toptimes" : [
+        <?php
+        $toptimesJSONs = array();
+        foreach ($this->topgoal->TopTimes() as $topgoaltime) {
+            array_push($toptimesJSONs, $this->partial('pastraceresult.phtml', array("pastraceresult" => $topgoaltime)));
+        }
+        echo join(",", $toptimesJSONs);
+        ?>
+    ]
+}

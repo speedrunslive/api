@@ -1,0 +1,9 @@
+{
+    <?php
+    $ratingsJSONs = array();
+    foreach ($this->ratings as $rating) {
+        array_push($ratingsJSONs, $this->partial('rating.phtml', array("rating" => $rating)));
+    }
+    echo join(",", $ratingsJSONs);
+    ?>
+}

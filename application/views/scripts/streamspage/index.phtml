@@ -1,0 +1,13 @@
+{
+    "count" : "<?php echo $this->count; ?>",
+    "streams" :
+        [
+            <?php
+            $streamsJSONs = array();
+            foreach ($this->streams as $stream) {
+                array_push($streamsJSONs, $this->partial('stream.phtml', array("stream" => $stream)));
+            }
+            echo join(",", $streamsJSONs);
+            ?>
+        ]
+}

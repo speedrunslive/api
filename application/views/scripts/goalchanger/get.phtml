@@ -1,0 +1,7 @@
+<?php
+    $goalsJSONs = array();
+    foreach ($this->topgoals as $goal) {
+        array_push($goalsJSONs, '{ "id": ' . $goal["goal_id"] . ', "name":' . json_encode(htmlspecialchars($goal["tracked_goal"])) . ', "count": ' . $goal["count"] . '}');
+    }
+    echo "[" . join(",", $goalsJSONs) . "]";
+?>

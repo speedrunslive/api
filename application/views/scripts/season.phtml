@@ -1,0 +1,16 @@
+{
+    "id" : "<?php echo $this->season->Id(); ?>",
+    "name" : <?php echo json_encode(htmlspecialchars($this->season->Name())); ?>,
+    "start_time" : <?php echo $this->season->StartDate(); ?>,
+    "end_time" : <?php echo $this->season->EndDate(); ?>,
+    "goals" :
+        [
+            <?php
+            $seasonsJSONs = array();
+            foreach ($this->season->Goals() as $goal) {
+                array_push($seasonsJSONs, $this->partial('seasongoal.phtml', array("seasonGoal" => $goal)));
+            }
+            echo join(",", $seasonsJSONs);
+            ?>
+        ]
+}

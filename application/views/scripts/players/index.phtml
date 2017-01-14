@@ -1,0 +1,13 @@
+{
+    "count" : "<?php echo $this->playerCount; ?>",
+    "players" :
+        [
+            <?php
+            $playersJSONs = array();
+            foreach ($this->players as $player) {
+                array_push($playersJSONs, $this->partial('player.phtml', array("player" => $player)));
+            }
+            echo join(",", $playersJSONs);
+            ?>
+        ]
+}

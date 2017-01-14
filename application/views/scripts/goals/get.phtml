@@ -1,0 +1,12 @@
+{
+    "game" : <?php echo $this->partial('game.phtml', array("game" => $this->game)); ?>,
+    "goals": [
+        <?php
+        $goalsJSONs = array();
+        foreach ($this->topgoals as $topgoal) {
+            array_push($goalsJSONs, $this->partial('topgoal.phtml', array("topgoal" => $topgoal)));
+        }
+        echo join(",", $goalsJSONs);
+        ?>
+    ]
+}

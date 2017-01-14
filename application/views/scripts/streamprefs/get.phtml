@@ -1,0 +1,12 @@
+{
+    "players":
+        [
+            <?php
+            $playersJSONs = array();
+            foreach ($this->players as $player) {
+                array_push($playersJSONs, $this->partial('streamprefs.phtml', array("player" => $player)));
+            }
+            echo join(",", $playersJSONs);
+            ?>
+        ]
+}

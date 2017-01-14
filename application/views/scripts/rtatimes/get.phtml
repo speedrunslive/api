@@ -1,0 +1,13 @@
+{
+    "count" : "<?php echo count($this->times); ?>",
+    "times" :
+        [
+            <?php
+            $timesJSONs = array();
+            foreach ($this->times as $rtatime) {
+                array_push($timesJSONs, $this->partial('rtatime.phtml', array("rtatime" => $rtatime)));
+            }
+            echo join(",", $timesJSONs);
+            ?>
+        ]
+}

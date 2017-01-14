@@ -1,0 +1,21 @@
+<? if (is_null($this->race)) { echo "{}"; return; } ?>
+{
+    "id" : "<?php echo $this->race->Id(); ?>",
+    "game" : <?php echo $this->partial('game.phtml', array("game" => $this->race->Game())); ?>,
+    "goal" : <?php echo json_encode(htmlspecialchars($this->race->Goal())); ?>,
+    "time" : <?php echo $this->race->Time(); ?>,
+    "state" : <?php echo $this->race->State(); ?>,
+    "statetext" : "<?php echo $this->race->StateText(); ?>",
+    "filename" : "<?php echo $this->race->Filename(); ?>",
+    "numentrants" : <?php echo count($this->race->Entrants()); ?>,
+    "entrants" :
+        {
+            <?php
+            $entrantsJSONs = array();
+            foreach ($this->race->Entrants() as $entrant) {
+                array_push($entrantsJSONs, $this->partial('entrant.phtml', array("entrant" => $entrant, "lower" => $this->lower)));
+            }
+            echo join(",", $entrantsJSONs);
+            ?>
+        }
+}

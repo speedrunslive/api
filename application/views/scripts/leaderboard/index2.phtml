@@ -1,0 +1,9 @@
+[
+    <?php
+    $leadersJSONs = array();
+    foreach ($this->stats as $stat) {
+        array_push($leadersJSONs, $this->partial('bigleader.phtml', array("bigleader" => $stat)));
+    }
+    echo join(",", $leadersJSONs);
+    ?>
+]

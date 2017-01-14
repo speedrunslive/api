@@ -1,0 +1,12 @@
+{
+    "monthlyStats" :
+    [
+        <?php
+            $monthlyJSONs = array();
+            foreach ($this->stat as $month) {
+                array_push($monthlyJSONs, $this->partial('monthlystat.phtml', array("month" => $month)));
+            }
+            echo join(",", $monthlyJSONs);
+        ?>
+    ]
+}

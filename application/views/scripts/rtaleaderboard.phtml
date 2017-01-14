@@ -1,0 +1,20 @@
+{
+    "id" : <? echo $this->lb->Id(); ?>,
+    "name" : <? echo json_encode($this->lb->Name()); ?>,
+    "game" : <? echo $this->partial('game.phtml', array("game" => $this->lb->Game())); ?>,
+    "timing_start" : <? echo json_encode($this->lb->TimingStart()); ?>,
+    "timing_end" : <? echo json_encode($this->lb->TimingEnd()); ?>,
+    "rules" : <? echo json_encode($this->lb->Rules()); ?>,
+    "description" : <? echo json_encode($this->lb->Description()); ?>,
+    "milestones" : <? echo json_encode($this->lb->Milestones()); ?>,
+    "tag_options" : 
+        [
+            <?php
+            $tagsJSONs = array();
+            foreach ($this->lb->TagOptions() as $tagOption) {
+                array_push($tagsJSONs, $this->partial('taggroup.phtml', array("tagGroup" => $tagOption)));
+            }
+            echo join(",", $tagsJSONs);
+            ?>
+        ]
+}

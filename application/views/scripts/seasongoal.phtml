@@ -1,0 +1,28 @@
+{
+    "id" : "<?php echo $this->seasonGoal->Id(); ?>",
+    "goal_id" : <?php echo json_encode(htmlspecialchars($this->seasonGoal->Goal()->Id())); ?>,
+    "name" : <?php echo json_encode(htmlspecialchars($this->seasonGoal->Goal()->Goal())); ?>,
+    "game" : <?php echo $this->partial('game.phtml', array("game" => $this->seasonGoal->Goal()->Game())); ?>,
+    "leadersCount" : <?php echo count($this->seasonGoal->Ranks()); ?>,
+    "leaders" :
+        [
+            <?php
+            $leadersJSONs = array();
+            foreach ($this->seasonGoal->Ranks() as $leader) {
+                array_push($leadersJSONs, $this->partial('leader.phtml', array("leader" => $leader)));
+            }
+            echo join(",", $leadersJSONs);
+            ?>
+        ],
+    "unrankedCount" : <?php echo count($this->seasonGoal->Unranks()); ?>,
+    "unranked" :
+        [
+            <?php
+            $unrankedJSONs = array();
+            foreach ($this->seasonGoal->Unranks() as $unrank) {
+                array_push($unrankedJSONs, $this->partial('leader.phtml', array("leader" => $unrank)));
+            }
+            echo join(",", $unrankedJSONs);
+            ?>
+        ]
+}

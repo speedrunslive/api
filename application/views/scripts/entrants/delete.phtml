@@ -1,0 +1,13 @@
+{
+    "count" : "<?php echo $this->entrantCount; ?>",
+    "entrants" :
+        {
+            <?php
+            $entrantsJSONs = array();
+            foreach ($this->entrants as $entrant) {
+                array_push($entrantsJSONs, $this->partial('entrant.phtml', array("entrant" => $entrant, "lower" => $this->lower)));
+            }
+            echo join(",", $entrantsJSONs);
+            ?>
+        }
+}

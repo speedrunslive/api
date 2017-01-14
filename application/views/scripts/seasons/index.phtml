@@ -1,0 +1,14 @@
+{
+    "current_season_id" : 0,
+    "count" : <?php echo count($this->seasons); ?>,
+    "seasons" :
+        [
+            <?php
+            $seasonsJSONs = array();
+            foreach ($this->seasons as $season) {
+                array_push($seasonsJSONs, $this->partial('season.phtml', array("season" => $season)));
+            }
+            echo join(",", $seasonsJSONs);
+            ?>
+        ]
+}

@@ -1,0 +1,10 @@
+"<?php echo ($this->lower) ? strtolower($this->entrant->Player()->Name()) : $this->entrant->Player()->Name(); ?>" :
+    {
+        "displayname" : "<?php echo $this->entrant->Player()->Name(); ?>",
+        "place" : <?php echo $this->entrant->Place(); ?>,
+        "time" : <?php echo $this->entrant->Time(); ?>,
+        "message" : <?php echo json_encode($this->entrant->Message()); ?>,
+        "statetext" : "<?php echo $this->entrant->StateText(); ?>",
+        "twitch" : "<?php echo $this->entrant->Twitch(); ?>",
+        "trueskill" : "<?php echo $this->entrant->Trueskill(); ?>"
+    }

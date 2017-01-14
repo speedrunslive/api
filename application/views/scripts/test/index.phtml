@@ -1,0 +1,10 @@
+<?
+Predis\Autoloader::register();
+$redis = new Predis\Client();
+
+$balance = $redis->get("paypal_balance");
+$target = 65.00;
+$balance = min($balance, $target);
+$percent = round($balance / $target, 2) * 100;
+
+echo sprintf('{"balance": %.2f, "target": %.2f, "percent": %d}', $balance, $target, $percent);

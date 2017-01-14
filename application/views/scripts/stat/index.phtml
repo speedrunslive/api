@@ -1,0 +1,17 @@
+{
+    "stats" : <?php
+        if ($this->type == "game") echo $this->partial('gamestat.phtml', array("stat" => $this->stat));
+        else if ($this->type == "player") echo $this->partial('playerstat.phtml', array("stat" => $this->stat, "rank" => $this->rank));
+        else if ($this->type == "overall") echo $this->partial('overallstat.phtml', array("stat" => $this->stat));
+        else if ($this->type == "playergame") echo $this->partial('playergamestat.phtml', array("stat" => $this->stat, "rank" => $this->rank));
+        else if ($this->type == "monthly") echo $this->partial('monthlystat.phtml', array("stat" => $this->stat));
+        ?>
+    <?php if ($this->player != null) {
+        echo ", \"player\" : " . $this->partial('player.phtml', array("player" => $this->player));
+    } ?>
+    <?php if ($this->game != null) {
+        echo ", \"game\" : " . $this->partial('game.phtml', array("game" => $this->game));
+    } else if ($this->type != "monthly") {
+        echo ", \"game\" : { \"name\" : \"Overall\", \"abbrev\" : \"overall\" }"; 
+    } ?>
+}

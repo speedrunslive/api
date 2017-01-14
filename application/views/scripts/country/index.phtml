@@ -1,0 +1,13 @@
+{
+    "count" : <?php echo count($this->countries); ?>,
+    "countries" :
+        [
+            <?php
+            $countriesJSONs = array();
+            foreach ($this->countries as $country) {
+                array_push($countriesJSONs, json_encode($country));
+            }
+            echo join(",", $countriesJSONs);
+            ?>
+        ]
+}

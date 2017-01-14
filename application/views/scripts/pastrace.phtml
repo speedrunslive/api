@@ -1,0 +1,27 @@
+{
+    "id" : "<?php echo $this->pastrace->Id(); ?>",
+    "game" : <?php echo $this->partial('game.phtml', array("game" => $this->pastrace->Game())); ?>,
+    "goal" : <?php echo json_encode(htmlspecialchars($this->pastrace->RaceGoal())); ?>,
+    "date" : "<?php echo $this->pastrace->RawTime(); ?>",
+    "numentrants" : <?php echo count($this->pastrace->RaceResults()); ?>,
+    "results" :
+        [
+            <?php
+            $resultsJSONs = array();
+            foreach ($this->pastrace->RaceResults() as $pastraceresult) {
+                array_push($resultsJSONs, $this->partial('pastraceresult.phtml', array("pastraceresult" => $pastraceresult)));
+            }
+            echo join(",", $resultsJSONs);
+            ?>
+        ],
+    "ranked_results" :
+        {
+            <?php
+            $resultsJSONs = array();
+            foreach ($this->pastrace->RankedResults() as $rankedresult) {
+                array_push($resultsJSONs, $this->partial('rankedresult.phtml', array("rankedresult" => $rankedresult)));
+            }
+            echo join(",", $resultsJSONs);
+            ?>
+        }
+}

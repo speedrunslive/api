@@ -1,0 +1,25 @@
+{
+    "game" : <?php echo $this->partial('game.phtml', array("game" => $this->game)); ?>,
+    "leadersCount" : <?php echo $this->leadersCount; ?>,
+    "leaders" :
+        [
+            <?php
+            $leadersJSONs = array();
+            foreach ($this->leaders as $leader) {
+                array_push($leadersJSONs, $this->partial('leader.phtml', array("leader" => $leader)));
+            }
+            echo join(",", $leadersJSONs);
+            ?>
+        ],
+    "unrankedCount" : <?php echo $this->unrankedCount; ?>,
+    "unranked" :
+        [
+            <?php
+            $unrankedJSONs = array();
+            foreach ($this->unranked as $unrank) {
+                array_push($unrankedJSONs, $this->partial('leader.phtml', array("leader" => $unrank)));
+            }
+            echo join(",", $unrankedJSONs);
+            ?>
+        ]
+}

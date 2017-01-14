@@ -1,0 +1,12 @@
+[
+    <?php
+    $gamesJSON = array();
+    foreach ($this->games as $game) {
+        $abbrev = $game["game_abbrev"];
+        $name = $game["game_name"];
+        $json = "{ \"gameAbbrev\" : \"$abbrev\", \"gameName\" : \"$name\" }";
+        array_push($gamesJSON, $json);
+    }
+    echo join(",", $gamesJSON);
+    ?>
+]

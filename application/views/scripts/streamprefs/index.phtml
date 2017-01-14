@@ -1,0 +1,50 @@
+{
+    "frontpage_pref" : <?php echo $this->frontpage_pref; ?>,
+	"pinnedstreams" :
+		[
+			<?php
+            $string = array();
+            foreach ( $this->pinnedStreams as $stream ) {
+            	$string[] = '"'.$stream['streamname'].'"';
+            }
+            $string = implode(",", $string);
+            echo $string;
+            ?>
+        ],
+    "pinnedgames" :
+        [
+            <?php
+            $string = array();
+            foreach ( $this->pinnedGames as $stream ) {
+                $string[] = '"'.$stream['streamname'].'"';
+            }
+            $string = implode(",", $string);
+            echo $string;
+            ?>
+        ],
+	"hiddenstreams" :
+		[
+			<?php
+            $string = array();
+            foreach ( $this->hiddenStreams as $stream ) {
+            	$string[] = '"'.$stream['streamname'].'"';
+            }
+            $string = implode(",", $string);
+            echo $string;
+            ?>
+        ],
+	"hiddengames" :
+		[
+			<?php
+            $string = array();
+            foreach ( $this->hiddenGames as $stream ) {
+            	$string[] = '"'.$stream['streamname'].'"';
+            }
+            $string = implode(",", $string);
+            echo $string;
+            ?>
+        ],
+    "streamname" : "<?php echo $this->stream; ?>",
+    "streamapi" : "<?php echo $this->streamapi; ?>",
+    "importpreference" : <?php echo $this->importpreference; ?>
+}
