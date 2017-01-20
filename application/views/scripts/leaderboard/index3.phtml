@@ -1,0 +1,21 @@
+<?php
+Predis\Autoloader::register();
+$redis = new Predis\Client();
+
+switch ($this->stattype)
+{
+    case 8:
+        echo $redis->get("leaderboards_wins");
+        break;
+    case 6:
+        echo $redis->get("leaderboards_time");
+        break;
+    case 3:
+        echo $redis->get("leaderboards_games");
+        break;
+    default:
+        echo $redis->get("leaderboards_races");
+        $sortColName = "numRaces";
+}
+
+?>

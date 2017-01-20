@@ -1,0 +1,52 @@
+version: '2'
+
+services:
+    # nginx:
+    #     build: ./docker/nginx
+    #     container_name: nginx_api
+    #     ports:
+    #       - "8081:80"
+    #     networks:
+    #         api:
+    #             aliases:
+    #               - nginx
+    # php:
+    #     build: ./docker/php/
+    #     container_name: php_api
+    #     volumes:
+    #       - .:/var/www/html
+    #     networks:
+    #         api:
+    #             aliases:
+    #               - php
+    mysql:
+        build: ./docker/mysql/
+        container_name: mysql_api
+        hostname: mysql
+        environment:
+            MYSQL_ROOT_PASSWORD: secret
+            MYSQL_DATABASE: srl_data
+            MYSQL_USER: dev
+            MYSQL_PASSWORD: password
+        ports:
+          - "3306:3306"
+        networks:
+            api:
+
+    elasticsearch:
+        build:
+            context: ./docker/elasticsearch
+            dockerfile: Dockerfile_elasticsearch
+        container_name: es
+        hostname: elasticsearch
+        command: -Des.cluster.name="dev" -Des.node.name="dev1"
+        ports:
+          - "9200:9200"
+        networks:
+            api:
+
+networks:
+    api:
+        driver: bridge
+# docker run -d -p 8081:80 -v //c/Users/Jiano/srl/api/docker/nginx:/etc/nginx/conf.d --network api_api --name nginx_api nginx
+# docker run -d -v //c/Users/Jiano/srl/api:/var/www/html --network api_api --name php_api api_php

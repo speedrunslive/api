@@ -30,8 +30,8 @@ class StreamprefsController extends Zend_Rest_Controller
         $this->view->pinnedGames = $this->streamprefsRepo->getPinnedGames($identity->username);
         $this->view->hiddenStreams = $this->streamprefsRepo->getHiddenStreams($identity->username);
         $this->view->hiddenGames = $this->streamprefsRepo->getHiddenGames($identity->username);
-        $this->view->stream = $this->streamRepo->GetStream($identity->username)["channel"];
-        $this->view->streamapi = $this->streamRepo->GetStream($identity->username)["api"];
+        // $this->view->stream = $this->streamRepo->GetStream($identity->username)["channel"];
+        // $this->view->streamapi = $this->streamRepo->GetStream($identity->username)["api"];
         $this->view->importpreference = $this->streamprefsRepo->GetImportPreference($identity->username);
         //$this->view->defaultSort = $this->streamprefsRepo->getDefaultSortPreference($identity->username);
     }

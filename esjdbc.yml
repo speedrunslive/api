@@ -1,0 +1,14 @@
+version: '2'
+
+services:
+  elasticsearch-jdbc:
+      build:
+          context: ./docker/elasticsearchjdbc
+          dockerfile: Dockerfile_esjdbc
+      container_name: esjdbc
+      networks:
+          api:
+
+networks:
+    api:
+        driver: bridge

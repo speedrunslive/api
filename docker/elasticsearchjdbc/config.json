@@ -1,0 +1,18 @@
+{
+  "type": "jdbc",
+  "jdbc": {
+    "url": "jdbc:mysql://mysql_api:3306/srl_data?loglevel=0",
+    "user": "dev",
+    "password": "password",
+    "strategy": "simple",
+    "sql":"SELECT game_id AS _id, game_name AS name, game_abbrev AS short, LOWER(game_name) AS name_exact, LOWER(game_abbrev) AS short_exact, game_poprank AS popularity, game_recentpop AS popularity_weight FROM game",
+    "index": "games",
+    "type": "game",
+    "autocommit": true,
+    "elasticsearch": {
+      "cluster": "dev",
+      "host": "es",
+      "port": "9300"
+    }
+  }
+}
