@@ -1,0 +1,73 @@
+{
+    {{#streams}}
+    "filter": {
+        "and": [
+            {
+                "term": {
+                    "streamQualified": 1
+                }
+            },
+            {
+                "term": {
+                    "api": "{{streams}}"
+                }
+            }
+        ]
+    },
+    {{/streams}}
+    {{#query}}
+    "query": {
+        "bool": {
+            "should": [
+                {
+                    "match": {
+                        "player_exact": {
+                            "query": "{{query}}",
+                            "boost": 20
+                        }
+                    }
+                },
+                {
+                    "function_score": {
+                        "query": {
+                            "match": {
+                                "player": "{{query}}"
+                            }
+                        },
+                        "functions": [
+                            {
+                                "field_value_factor": {
+                                    "field": "numRaces",
+                                    "modifier": "log1p",
+                                    "factor": 0.17
+                                }
+                            },
+                            {
+                                "field_value_factor": {
+                                    "field": "numWins",
+                                    "modifier": "log1p",
+                                    "factor": 0.46
+                                }
+                            },
+                            {
+                                "field_value_factor": {
+                                    "field": "timePlayed",
+                                    "modifier": "sqrt",
+                                    "factor": 0.01
+                                }
+                            }
+                        ]
+                    }
+                }
+            ],
+            "minimum_number_should_match": 1
+        }
+    },
+    {{/query}}
+    "_source": {
+        {{#streams}}
+        "include": [ "player", "stream", "api", "whitelisted", "streamQualified" ],
+        {{/streams}}
+        "exclude": [ "player_exact" ]
+    }
+}

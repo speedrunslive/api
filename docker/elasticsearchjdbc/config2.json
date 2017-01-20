@@ -1,0 +1,18 @@
+{
+  "type": "jdbc",
+  "jdbc": {
+    "url": "jdbc:mysql://mysql_api:3306/srl_data?loglevel=0",
+    "user": "dev",
+    "password": "password",
+    "strategy": "simple",
+    "sql":"SELECT p.player_id AS _id, player_name AS player, LOWER(player_name) AS player_exact, COUNT(*) AS numRaces, SUM(CASE WHEN place = 1 THEN 1 ELSE 0 END) AS numWins, SUM(CASE WHEN time > 0 THEN time ELSE 0 END) AS timePlayed, COUNT(DISTINCT game_game_id) AS numGames, s.channel AS stream, s.api AS api, s.whitelisted as whitelisted, (CASE WHEN ((SUM(CASE WHEN time > 0 THEN time ELSE 0 END) AND ((UNIX_TIMESTAMP(NOW())-11209600) < last_seen) AND s.whitelisted IN (0, 1)) OR s.whitelisted = 1) THEN 1 ELSE 0 END) AS streamQualified FROM race_link INNER JOIN players p ON players_player_id = p.player_id INNER JOIN races ON race_id = races_race_id LEFT JOIN streams s ON players_player_id = s.player_id GROUP BY player_name",
+    "index": "players",
+    "type": "player",
+    "autocommit": true,
+    "elasticsearch": {
+      "cluster": "dev",
+      "host": "es",
+      "port": "9300"
+    }
+  }
+}

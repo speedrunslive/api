@@ -5,9 +5,9 @@ abstract class SRL_Data_BaseRepository
     private $conn;
     protected $pageSize = 50;
     private $mysql_database = "srl_data";
-    private $mysql_hostname = "localhost";
-    private $mysql_username = "";
-    private $mysql_password = "";
+    private $mysql_hostname = "mysql";
+    private $mysql_username = "dev";
+    private $mysql_password = "password";
     private $logname = "";
     private $debugcount = 0;
     private $debugid = "";

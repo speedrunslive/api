@@ -1,0 +1,49 @@
+{
+    "query": {
+        "bool": {
+            "should": [
+                {
+                    "prefix": {
+                        "name_exact": {
+                            "value": "{{query}}",
+                            "boost": 40
+                        }
+                    }
+                },
+                {
+                    "match": {
+                        "name_exact": {
+                            "query": "{{query}}",
+                            "boost": 10
+                        }
+                    }
+                },
+                {
+                    "match": {
+                        "short_exact": {
+                            "query": "{{query}}",
+                            "boost": 10
+                        }
+                    }
+                },
+                {
+                    "function_score": {
+                        "query": {
+                            "multi_match": {
+                                "query": "{{query}}",
+                                "fields": ["name^7", "short^2"]
+                            }
+                        },
+                        "field_value_factor": {
+                            "field": "popularity_weight",
+                            "modifier": "log1p",
+                            "factor": 0.007
+                        }
+                    }
+                }
+            ],
+            "minimum_number_should_match": 1
+        }
+    },
+    "_source": ["name", "short"]
+}

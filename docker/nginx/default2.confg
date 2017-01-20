@@ -1,0 +1,492 @@
+server {
+    listen 80;
+    server_name speedrunslive.com;
+    rewrite ^(.*) http://www.speedrunslive.com$1 permanent;
+}
+
+server {
+    listen 80;
+    server_name www.speedrunslive.com;
+
+    root /srv/www/speedrunslive.com;
+    index index.php index.html index.htm;
+
+    #access_log off;
+
+    gzip_types text/plain text/css application/x-javascript text/javascript;
+
+    pagespeed on;
+    pagespeed FileCachePath /var/cache/pagespeed;
+    pagespeed EnableFilters recompress_images,rewrite_images;
+    pagespeed InPlaceResourceOptimization on;
+    pagespeed AdminPath /pagespeed_admin;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+
+    location ~ \.php$ {
+        try_files $uri =404;
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        fastcgi_pass unix:/var/run/www0.sock;
+        fastcgi_index index.php;
+        include fastcgi_params;
+    }
+
+    if ($http_user_agent ~ MSIE) {
+        rewrite ^ /MSIE.php break;
+    }
+
+    error_page 404 500 /404.php;
+
+    location /phpMyAdmin {
+        deny all;
+    }
+
+    location /image_uploader {
+        auth_basic "Restricted";
+        auth_basic_user_file /srv/www/speedrunslive.com/image_uploader/.htpasswd;
+    }
+
+    location /gys/control/ {
+        deny all;
+        proxy_pass          http://localhost:8080/;
+        proxy_set_header    Host            $host;
+        proxy_set_header    X-Real-IP       $remote_addr;
+        proxy_http_version  1.1;
+    }
+
+    location /gys/display {
+        deny all;
+
+        alias /srv/www/gys/display;
+    }
+
+    location /gys/controlpanel {
+        deny all;
+
+        alias /srv/www/gys/panel;
+    }
+
+    location /gys {
+        return 302 http://www.speedrunslive.com/news/get-yourself-speedrunning-agdq-2017/;
+    }
+
+    location ~ ^/pagespeed_admin { allow 127.0.0.1; allow 108.162.91.52; allow 79.142.227.154; deny all; }
+    location ~ "\.pagespeed\.([a-z]\.)?[a-z]{2}\.[^.]{10}\.[^.]+" { add_header "" ""; }
+}
+
+server {
+    listen 80;
+    server_name cdn.speedrunslive.com;
+
+    root /srv/www/cdn.speedrunslive.com;
+
+    access_log off;
+
+    pagespeed on;
+    pagespeed FileCachePath /var/cache/pagespeed;
+    pagespeed EnableFilters recompress_images,rewrite_images,extend_cache;
+    pagespeed RewriteLevel OptimizeForBandwidth;
+    pagespeed InPlaceResourceOptimization on;
+    pagespeed AdminPath /pagespeed_admin;
+
+    location ~ ^/pagespeed_admin { allow 127.0.0.1; allow 108.162.91.52; allow 79.142.227.154; deny all; }
+    location ~ "\.pagespeed\.([a-z]\.)?[a-z]{2}\.[^.]{10}\.[^.]+" { add_header "" ""; }
+
+    error_page 403 404 /404.html;
+    add_header 'Access-Control-Allow-Origin' '*';
+}
+
+#fastcgi_cache_path /var/cache/nginx levels=1:2 keys_zone=srlapi:5m max_size=256m inactive=10m;
+proxy_cache_path /var/cache/nginx levels=1:2 keys_zone=srlapi:10m max_size=256m inactive=25s;
+proxy_temp_path /var/tmp/nginx;
+
+upstream apache2_api {
+    ip_hash;
+    server localhost:81;
+}
+
+server {
+    listen 80;
+    server_name api.speedrunslive.com;
+
+    root /srv/www/api/public;
+    index index.php index.html index.htm;
+
+    #access_log off;
+
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+
+    set $cache_uri $request_uri;
+
+    if ($http_x_srl_api_key) {
+        set $cache_uri 'null';
+    }
+
+    location / {
+        set $cache_bypass 0;
+        if ($cache_uri = 'null') {
+            set $cache_bypass 1;
+        }
+        #add_header X-Cache-Debug "$cache_uri | $cache_bypass | $cookie_nocache | $arg_nocache$arg_comment | $http_pragma | $http_authorization";
+        proxy_cache_bypass $cache_bypass;
+        proxy_cache srlapi;
+        proxy_cache_key $scheme$host$request_uri$request_method;
+        proxy_cache_valid 25s;
+#        proxy_cache_bypass $http_pragma;
+#        proxy_cache_use_stale updating error timeout invalid_header http_500;
+        proxy_cache_use_stale error timeout invalid_header http_500 http_502 http_504 http_404;
+        proxy_pass http://apache2_api;
+#        try_files $uri $uri/ /index.php$is_args$args;
+        proxy_ignore_headers Set-Cookie;
+        proxy_ignore_headers Cache-Control;
+        if ($http_origin ~* "^http?:\/\/(\w+\.)?(speedrunslive\.com)$") {
+    add_header 'Access-Control-Allow-Origin' '$http_origin';
+    add_header 'Access-Control-Allow-Credentials' 'true';
+    set $cors_origin 1;
+  }
+  if ($cors_origin != 1) {
+    add_header 'Access-Control-Allow-Origin' '*';
+    add_header 'Access-Control-Allow-Credentials' 'false';
+  }
+  # add_header X-Cache-Status $upstream_cache_status;
+    }
+
+#    location ~ \.php$ {
+#        set $cache_bypass 1;
+#        if ($cache_uri != 'null') {
+#            add_header X-Cache-Debug "$cache_uri $cookie_nocache $arg_nocache$arg_comment $http_pragma $http_authorization";
+#            set $cache_bypass 0;
+#        }
+#        fastcgi_cache_bypass $cache_bypass;
+#        fastcgi_cache srlapi;
+#        fastcgi_cache_key $scheme$host$request_uri$request_method;
+#        fastcgi_cache_valid 200 1m;
+#        fastcgi_cache_use_stale updating;
+#        fastcgi_cache_bypass $http_pragma;
+#        fastcgi_cache_use_stale updating error timeout invalid_header http_500;
+#        fastcgi_pass unix:/var/run/www0.sock;
+#        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+#        include fastcgi_params;
+#    }
+    location ~/search/(?<index>([a-zA-Z]+))$ {
+        limit_except GET {
+            deny all;
+        }
+
+        set $args $args&pretty;
+        rewrite ^ /$index/_search/template break;
+
+        proxy_pass          http://localhost:9200;
+        proxy_set_body      "{\"template\":{\"file\":\"$index\"},\"params\":$request_body}";
+        proxy_set_header    Host            $host;
+        proxy_set_header    X-Real-IP       $remote_addr;
+        proxy_http_version  1.1;
+        proxy_set_header    Connection      "Keep-Alive";
+        proxy_set_header    Proxy-Connection "Keep-Alive";
+    }
+
+    location ~/search/(?<index>([a-zA-Z]+))/(?<query>([a-zA-Z\d\-_\s\:]+))$ {
+        limit_except GET {
+            deny all;
+        }
+
+        set $args $args&pretty;
+        rewrite ^ /$index/_search/template break;
+
+        proxy_pass          http://localhost:9200;
+        proxy_set_body      "{\"template\":{\"file\":\"$index\"},\"params\":{\"query\":\"$query\"}}";
+        proxy_set_header    Host            $host;
+        proxy_set_header    X-Real-IP       $remote_addr;
+        proxy_http_version  1.1;
+        proxy_set_header    Connection      "Keep-Alive";
+        proxy_set_header    Proxy-Connection "Keep-Alive";
+    }
+
+    location /es {
+        allow 192.241.240.248;
+        allow 108.162.91.52; #rainbow
+        allow 162.243.59.233; #server
+        allow 127.0.0.1;
+        allow 24.193.161.56; #blechey
+        deny all;
+
+        set $args $args&pretty;
+
+        proxy_pass          http://localhost:9200/;
+        proxy_set_header    Host            $host;
+        proxy_set_header    X-Real-IP       $remote_addr;
+        proxy_http_version  1.1;
+        proxy_set_header    Connection      "Keep-Alive";
+        proxy_set_header    Proxy-Connection "Keep-Alive";
+    }
+
+    location /frontend/donate {
+        limit_except GET {
+            deny all;
+        }
+
+        set $args $args&pretty;
+        rewrite ^ /frontend/donate/1 break;
+
+        proxy_pass          http://localhost:9200;
+        proxy_set_header    Host            $host;
+        proxy_set_header    X-Real-IP       $remote_addr;
+        proxy_http_version  1.1;
+        proxy_set_header    Connection      "Keep-Alive";
+        proxy_set_header    Proxy-Connection "Keep-Alive";
+    }
+
+    location /frontend/streams {
+        limit_except GET {
+            deny all;
+        }
+
+        set $args $args&pretty;
+        rewrite ^ /frontend/streams/1 break;
+
+        proxy_pass          http://localhost:9200;
+        proxy_set_header    Host            $host;
+        proxy_set_header    X-Real-IP       $remote_addr;
+        proxy_http_version  1.1;
+        proxy_set_header    Connection      "Keep-Alive";
+        proxy_set_header    Proxy-Connection "Keep-Alive";
+    }
+
+    location ~/frontend/events/(?<id>([0-9]+))$ {
+        limit_except GET {
+            deny all;
+        }
+
+        set $args $args&pretty;
+        rewrite ^ /frontend/events/$id break;
+
+        proxy_pass          http://localhost:9200;
+        proxy_set_header    Host            $host;
+        proxy_set_header    X-Real-IP       $remote_addr;
+        proxy_http_version  1.1;
+        proxy_set_header    Connection      "Keep-Alive";
+        proxy_set_header    Proxy-Connection "Keep-Alive";
+    }
+
+    location /lb/racestats {
+        limit_except GET {
+            deny all;
+        }
+
+        set $args $args&pretty;
+        rewrite ^ /players/_search/template break;
+        proxy_pass          http://localhost:9200;
+        proxy_set_body      "{\"template\":{\"file\":\"players\"},\"params\":{}}";
+        proxy_set_header    Host            $host;
+        proxy_set_header    X-Real-IP       $remote_addr;
+        proxy_http_version  1.1;
+        proxy_set_header    Connection      "Keep-Alive";
+        proxy_set_header    Proxy-Connection "Keep-Alive";
+    }
+
+    location /.well-known/acme-challenge { # Let's Encrypt SSL validation - API only due to potential CORS issues on frontend
+      root /srv/www/api/letsencrypt;
+    }
+}
+
+#yeah i copied the entire config for ssl, deal with it
+server {
+    listen 443;
+    server_name api.speedrunslive.com;
+
+    ssl on;
+    ssl_certificate /etc/letsencrypt/live/api.speedrunslive.com-0001/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/api.speedrunslive.com-0001/privkey.pem;
+    ssl_dhparam /etc/letsencrypt/live/api.speedrunslive.com-0001/dhparams.pem;
+    ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+    ssl_prefer_server_ciphers on;
+    ssl_ecdh_curve secp384r1;
+    ssl_session_cache shared:SSL:10m;
+    ssl_stapling on;
+    ssl_stapling_verify on;
+
+    root /srv/www/api/public;
+    index index.php index.html index.htm;
+
+    #access_log off;
+
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+
+    set $cache_uri $request_uri;
+
+    if ($http_x_srl_api_key) {
+        set $cache_uri 'null';
+    }
+
+    location / {
+        set $cache_bypass 0;
+        if ($cache_uri = 'null') {
+            set $cache_bypass 1;
+        }
+        #add_header X-Cache-Debug "$cache_uri | $cache_bypass | $cookie_nocache | $arg_nocache$arg_comment | $http_pragma | $http_authorization";
+        proxy_cache_bypass $cache_bypass;
+        proxy_cache srlapi;
+        proxy_cache_key $scheme$host$request_uri$request_method;
+        proxy_cache_valid 25s;
+#        proxy_cache_bypass $http_pragma;
+#        proxy_cache_use_stale updating error timeout invalid_header http_500;
+        proxy_cache_use_stale error timeout invalid_header http_500 http_502 http_504 http_404;
+        proxy_pass http://apache2_api;
+#        try_files $uri $uri/ /index.php$is_args$args;
+        proxy_ignore_headers Set-Cookie;
+        proxy_ignore_headers Cache-Control;
+        if ($http_origin ~* "^http?:\/\/(\w+\.)?(speedrunslive\.com)$") {
+    add_header 'Access-Control-Allow-Origin' '$http_origin';
+    add_header 'Access-Control-Allow-Credentials' 'true';
+    set $cors_origin 1;
+  }
+  if ($cors_origin != 1) {
+    add_header 'Access-Control-Allow-Origin' '*';
+    add_header 'Access-Control-Allow-Credentials' 'false';
+  }
+  # add_header X-Cache-Status $upstream_cache_status;
+    }
+
+#    location ~ \.php$ {
+#        set $cache_bypass 1;
+#        if ($cache_uri != 'null') {
+#            add_header X-Cache-Debug "$cache_uri $cookie_nocache $arg_nocache$arg_comment $http_pragma $http_authorization";
+#            set $cache_bypass 0;
+#        }
+#        fastcgi_cache_bypass $cache_bypass;
+#        fastcgi_cache srlapi;
+#        fastcgi_cache_key $scheme$host$request_uri$request_method;
+#        fastcgi_cache_valid 200 1m;
+#        fastcgi_cache_use_stale updating;
+#        fastcgi_cache_bypass $http_pragma;
+#        fastcgi_cache_use_stale updating error timeout invalid_header http_500;
+#        fastcgi_pass unix:/var/run/www0.sock;
+#        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+#        include fastcgi_params;
+#    }
+    location ~/search/(?<index>([a-zA-Z]+))$ {
+        limit_except GET {
+            deny all;
+        }
+
+        set $args $args&pretty;
+        rewrite ^ /$index/_search/template break;
+
+        proxy_pass          http://localhost:9200;
+        proxy_set_body      "{\"template\":{\"file\":\"$index\"},\"params\":$request_body}";
+        proxy_set_header    Host            $host;
+        proxy_set_header    X-Real-IP       $remote_addr;
+        proxy_http_version  1.1;
+        proxy_set_header    Connection      "Keep-Alive";
+        proxy_set_header    Proxy-Connection "Keep-Alive";
+    }
+
+    location ~/search/(?<index>([a-zA-Z]+))/(?<query>([a-zA-Z\d\-_\s\:]+))$ {
+        limit_except GET {
+            deny all;
+        }
+
+        set $args $args&pretty;
+        rewrite ^ /$index/_search/template break;
+
+        proxy_pass          http://localhost:9200;
+        proxy_set_body      "{\"template\":{\"file\":\"$index\"},\"params\":{\"query\":\"$query\"}}";
+        proxy_set_header    Host            $host;
+        proxy_set_header    X-Real-IP       $remote_addr;
+        proxy_http_version  1.1;
+        proxy_set_header    Connection      "Keep-Alive";
+        proxy_set_header    Proxy-Connection "Keep-Alive";
+    }
+
+    location /es {
+        allow 192.241.240.248;
+        allow 108.162.91.52; #rainbow
+        allow 162.243.59.233; #server
+        allow 127.0.0.1;
+        allow 24.193.161.56; #blechey
+        deny all;
+
+        set $args $args&pretty;
+
+        proxy_pass          http://localhost:9200/;
+        proxy_set_header    Host            $host;
+        proxy_set_header    X-Real-IP       $remote_addr;
+        proxy_http_version  1.1;
+        proxy_set_header    Connection      "Keep-Alive";
+        proxy_set_header    Proxy-Connection "Keep-Alive";
+    }
+
+    location /frontend/donate {
+        limit_except GET {
+            deny all;
+        }
+
+        set $args $args&pretty;
+        rewrite ^ /frontend/donate/1 break;
+
+        proxy_pass          http://localhost:9200;
+        proxy_set_header    Host            $host;
+        proxy_set_header    X-Real-IP       $remote_addr;
+        proxy_http_version  1.1;
+        proxy_set_header    Connection      "Keep-Alive";
+        proxy_set_header    Proxy-Connection "Keep-Alive";
+    }
+
+    location /frontend/streams {
+        limit_except GET {
+            deny all;
+        }
+
+        set $args $args&pretty;
+        rewrite ^ /frontend/streams/1 break;
+
+        proxy_pass          http://localhost:9200;
+        proxy_set_header    Host            $host;
+        proxy_set_header    X-Real-IP       $remote_addr;
+        proxy_http_version  1.1;
+        proxy_set_header    Connection      "Keep-Alive";
+        proxy_set_header    Proxy-Connection "Keep-Alive";
+    }
+
+    location ~/frontend/events/(?<id>([0-9]+))$ {
+        limit_except GET {
+            deny all;
+        }
+
+        set $args $args&pretty;
+        rewrite ^ /frontend/events/$id break;
+
+        proxy_pass          http://localhost:9200;
+        proxy_set_header    Host            $host;
+        proxy_set_header    X-Real-IP       $remote_addr;
+        proxy_http_version  1.1;
+        proxy_set_header    Connection      "Keep-Alive";
+        proxy_set_header    Proxy-Connection "Keep-Alive";
+    }
+
+    location /lb/racestats {
+        limit_except GET {
+            deny all;
+        }
+
+        set $args $args&pretty;
+        rewrite ^ /players/_search/template break;
+        proxy_pass          http://localhost:9200;
+        proxy_set_body      "{\"template\":{\"file\":\"players\"},\"params\":{}}";
+        proxy_set_header    Host            $host;
+        proxy_set_header    X-Real-IP       $remote_addr;
+        proxy_http_version  1.1;
+        proxy_set_header    Connection      "Keep-Alive";
+        proxy_set_header    Proxy-Connection "Keep-Alive";
+    }
+
+    location /.well-known/acme-challenge { # Let's Encrypt SSL validation - API only due to potential CORS issues on frontend
+      root /srv/www/api/letsencrypt;
+    }
+}
