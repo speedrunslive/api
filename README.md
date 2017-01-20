@@ -14,7 +14,8 @@ Windows Installation
 0. You will need to add the IP of your docker machine to your /etc/hosts file (use whatever alias you want). You can run `docker-machine ip` to retrieve it.
 0. Navigate to the root of the project
 0. Run `docker-compose -f docker-compose-windows.yml up -d`, for now this will only boot up the MySQL container and the Elasticsearch container until we figure out how to mount volumes through docker-compose.
-0. Run the following command, MAKE SURE YOU FIX THE PATH FOR YOUR MACHINE. This needs to be an absolute path to work on Windows(the two beginning slashes bypass the mysys path conversion). You will probably just need to replace "Jiano" with whatever your user name is personal absolute path to your project: `docker run -d -v //c/Users/Jiano/srl/api:/var/www/html --network api_api --name php_api api_php`
+0. Run `docker build -t api_php ./docker/php`
+0. Run the following command, MAKE SURE YOU FIX THE PATH FOR YOUR MACHINE. This needs to be an absolute path to work on Windows(the two beginning slashes bypass the mysys path conversion). You will probably just need to replace "Jiano" and "srl": `docker run -d -v //c/Users/Jiano/srl/api:/var/www/html --network api_api --name php_api api_php`
 0. Run the following command just like the previous, FIX THE PATH: `docker run -d -p 8081:80 -v //c/Users/Jiano/srl/api/docker/nginx:/etc/nginx/conf.d --network api_api --name nginx_api nginx`
 
 Now in a browser just navigate to whatever alias you used in your /etc/hosts using the :8081 port to verify. For example, if I used "dev.speedrunslive.com" as the alias, the url would be: http://dev.speedrunslive.com:8081
